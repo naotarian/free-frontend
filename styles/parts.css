@@ -1,0 +1,61 @@
+/* バナー本体 */
+.news-banner {
+  display: block;
+  height: 45px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* バナー内コンテンツ */
+.news-banner__content {
+  display: inline-block;
+  color: #fff;
+  line-height: 13px;
+  padding-left: 100%;
+  white-space: nowrap;
+  animation: animate-banner 20s linear infinite;
+}
+
+/* バナー内の要素をすべて選択 */
+.news-banner__content > * {
+  display: inline-block;
+}
+
+/* 横にスクロールさせるアニメーション */
+@keyframes animate-banner {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+.search_list {
+  border-bottom: 1px dashed #333;
+  padding: 1rem;
+  margin: 0;
+}
+.search_list li {
+  display: inline;
+  margin-right: 1rem;
+  font-size: 0.8rem;
+  color: #fff;
+  cursor: pointer;
+}
+.search_list li:hover {
+  opacity: 0.7;
+}
+.mw-100 {
+  max-width: 100px!important;
+}
+.w-45 {
+  width: 45%;
+}
+.alternate_flex_ul .flex_list{
+  display:flex;
+  justify-content: space-around;
+  margin-top:40px;
+}
+.alternate_flex_ul .flex_list:nth-child(odd){
+  flex-direction: row-reverse;
+}
