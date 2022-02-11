@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import Link from 'next/link'
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
@@ -47,16 +48,18 @@ const Invitation = () => {
       <ThemeProvider theme={theme}>
         <LeftGrid>
           <ReadTypography>
-            その質問、メンターに聞いてみよう
+            その仕事、適した人材に任せよう。
           </ReadTypography>
-            1週間調べても分からないことが、相談すれば30秒で解決することもあります
+            お仕事の依頼、相談ならfreeで完結。
           <StyledFlexPaper elevation={3}>
             <Grid className="w-45">
             <img src="/images/noimage.png" className="mw-100 w-45" />
             </Grid>
             <Grid className="w-45">
               <StartButton variant="contained" color={'secondary'}>今すぐ始める</StartButton>
-              <Typography>フリーランスの方はこちら</Typography>
+              <Link href="/login">
+                <a><Typography>フリーランスの方はこちら</Typography></a>
+              </Link>
             </Grid>
           </StyledFlexPaper>
         </LeftGrid>

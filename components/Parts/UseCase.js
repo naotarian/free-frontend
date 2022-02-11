@@ -27,6 +27,11 @@ const AlternateGrid = styled(Grid)`
 const FlexSlider = styled(Slider)`
   width: 30%;
 `
+const OccupationTypography = styled(Typography)`
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+`
 
 const UseCase = () => {
   const settings = {
@@ -43,12 +48,12 @@ const UseCase = () => {
       <ul className="alternate_flex_ul">
         <li className="flex_list">
           <AlternateGrid>
-            <Typography>「未経験からエンジニア、デザイナーを目指している」</Typography>
+            <OccupationTypography>ITエンジニア</OccupationTypography>
             <ul>
-              <li>プログラミングの学習をはじめたけど、何をどこまでやればいいの？」</li>
-              <li>「自分がやっている勉強法は効率的なんだろうか」</li>
-              <li>「どこまで学習すれば案件獲得できる？」</li>
-              <li>どんなポートフォリオをつくればいいか相談したい、添削してほしい」</li>
+              <li>「社内のエンジニアだけでは人手が足りない...。」</li>
+              <li>「短期間のプロジェクトにアサインしてほしい。」</li>
+              <li>「信頼できるエンジニアに依頼したい。」</li>
+              <li>「新人エンジニアの育成をして欲しい。」</li>
             </ul>
             <Typography>
               目指すゴールによって道のりはさまざまです。初心者にとっては登るべき山の全体像が見えづらいもの。
@@ -69,12 +74,12 @@ const UseCase = () => {
         </li>
         <li className="flex_list">
           <AlternateGrid>
-            <Typography>「未経験からエンジニア、デザイナーを目指している」</Typography>
+            <OccupationTypography>イラストレーター</OccupationTypography>
             <ul>
-              <li>プログラミングの学習をはじめたけど、何をどこまでやればいいの？」</li>
-              <li>「自分がやっている勉強法は効率的なんだろうか」</li>
-              <li>「どこまで学習すれば案件獲得できる？」</li>
-              <li>どんなポートフォリオをつくればいいか相談したい、添削してほしい」</li>
+              <li>「自分好みのイラストが描けるようになりたい!」</li>
+              <li>「イラストが描けるようになるにはどうしたらいいの？」</li>
+              <li>「自分で選んだ方に教えてもらいたい!」</li>
+              <li>「自分のイラストにアドバイスが欲しい!」</li>
             </ul>
             <Typography>
               目指すゴールによって道のりはさまざまです。初心者にとっては登るべき山の全体像が見えづらいもの。
@@ -95,12 +100,12 @@ const UseCase = () => {
         </li>
         <li className="flex_list">
           <AlternateGrid>
-            <Typography>「未経験からエンジニア、デザイナーを目指している」</Typography>
+            <OccupationTypography>イラストレーター</OccupationTypography>
             <ul>
-              <li>プログラミングの学習をはじめたけど、何をどこまでやればいいの？」</li>
-              <li>「自分がやっている勉強法は効率的なんだろうか」</li>
-              <li>「どこまで学習すれば案件獲得できる？」</li>
-              <li>どんなポートフォリオをつくればいいか相談したい、添削してほしい」</li>
+              <li>自分好みのイラストが描けるようになりたい!</li>
+              <li>「イラストが描けるようになるにはどうしたらいいの？」</li>
+              <li>自分で選んだ方に教えてもらいたい!</li>
+              <li>自分のイラストにアドバイスが欲しい!</li>
             </ul>
             <Typography>
               目指すゴールによって道のりはさまざまです。初心者にとっては登るべき山の全体像が見えづらいもの。

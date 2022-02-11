@@ -1,0 +1,80 @@
+import React, { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import styled from 'styled-components'
+//mui
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import {theme} from '../components/common/theme/theme'
+import { ThemeProvider } from '@mui/material/styles'
+import Button from '@mui/material/Button'
+import LoginIcon from '@mui/icons-material/Login'
+const LoginGrid = styled(Grid)`
+  background: #CCECCC;
+  height: 100vh;
+  padding-top: 40vh;
+  @media screen and (max-width:767px) { 
+    padding-top: 20vh;
+  }
+`
+const LoginPaper = styled(Paper)`
+  width: 50%;
+  padding: 1rem;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  @media screen and (max-width:767px) { 
+    width: 90%;
+    height: 300px;
+  }
+`
+const LoginPaperTypography = styled(Typography)`
+  color: #2e7d32;
+  font-size: 1.5rem;
+  font-weight: bold;
+`
+const StyledTextField = styled(TextField)`
+  width: 400px;
+  margin-top: 2rem;
+  @media screen and (max-width:767px) { 
+    width: 100%;
+  }
+`
+const StyledButton = styled(Button)`
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+`
+
+const Login = () => {
+  const { register, handleSubmit } = useForm()
+  const [emailErrFlag, setEmailErrFlag] = useState(false);
+  // フォーム送信時の処理
+  const onSubmit = (data) => {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    // if (!emailRegex.test(data.email)) return '※正しい形式でメールアドレスを入力してください';
+    if (!emailRegex.test(data.email)) {
+      setEmailErrFlag(true)
+      return
+    } else {
+      setEmailErrFlag(false)
+    }
+    console.log(data)
+  }
+  return (
+    <LoginGrid>
+      <ThemeProvider theme={theme}>
+        <LoginPaper elevation={3}>
+          <LoginPaperTypography>ログイン</LoginPaperTypography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
+            <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
+            <StyledButton variant="contained" color={'primary'} startIcon={<LoginIcon />} type="submit">ログイン</StyledButton>
+          </form>
+        </LoginPaper>
+      </ThemeProvider>
+    </LoginGrid>
+  )
+} 
+export default Login
