@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import Link from 'next/link'
 import styled from 'styled-components'
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import {theme} from '../components/common/theme/theme'
+import {theme} from '../../components/common/theme/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import LoginIcon from '@mui/icons-material/Login'
@@ -46,6 +47,10 @@ const StyledButton = styled(Button)`
   bottom: 25px;
   right: 25px;
 `
+const RegisterTypography = styled(Typography)`
+  margin-top: 2rem;
+  color: #333;
+`
 
 const Login = () => {
   const { register, handleSubmit } = useForm()
@@ -72,6 +77,9 @@ const Login = () => {
             <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
             <StyledButton variant="contained" color={'primary'} startIcon={<LoginIcon />} type="submit">ログイン</StyledButton>
           </form>
+          <Link href="/auth/register">
+            <a><RegisterTypography>新規アカウント登録はこちら</RegisterTypography></a>
+          </Link>
         </LoginPaper>
       </ThemeProvider>
     </LoginGrid>

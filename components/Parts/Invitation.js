@@ -57,7 +57,7 @@ const Invitation = () => {
             </Grid>
             <Grid className="w-45">
               <StartButton variant="contained" color={'secondary'}>今すぐ始める</StartButton>
-              <Link href="/login">
+              <Link href="/auth/login">
                 <a><Typography>フリーランスの方はこちら</Typography></a>
               </Link>
             </Grid>
