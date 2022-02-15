@@ -14,6 +14,7 @@ import SearchHeader from '../components/Parts/Header/SearchHeader'
 import Invitation from '../components/Parts/Invitation'
 import SlideInformation from '../components/Parts/SlideInformation'
 import UseCase from '../components/Parts/UseCase'
+import store from "../redux/store"
 const StyledButton = styled(Button)`
   width: 300px;
 `
@@ -26,6 +27,7 @@ const WrapeprGrid = styled(Grid)`
 export default function Home() {
   return (
     <WrapeprGrid>
+      <p>Count:{store.getState().count}</p>
       <MoveHeader />
       <SearchHeader />
       <Invitation />

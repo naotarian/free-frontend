@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
+import store from "../../redux/store"
+import { useDispatch, useSelector } from "react-redux"
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import { ThemeProvider } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import HowToRegIcon from '@mui/icons-material/HowToReg'
 import Tabs from '@mui/material/Tabs'
@@ -15,8 +17,7 @@ import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 //components
 import AccountTypeTab from '../../components/Parts/Auth/AccountTypeTab'
-import {theme} from '../../components/common/theme/theme'
-const LoginGrid = styled(Grid)`
+const RegisterGrid = styled(Grid)`
   background: #CCECCC;
   height: 100vh;
   padding-top: 25vh;
@@ -65,10 +66,13 @@ const RegisterTypography = styled(Typography)`
   color: #333;
 `
 
-const Login = () => {
+const Register = () => {
   const { register, handleSubmit } = useForm()
   const [emailErrFlag, setEmailErrFlag] = useState(false);
   const [accountType, setAccountType] = useState('business')
+  const storeEmail = useSelector((state) => state.email)
+  const dispatch = useDispatch()
+  const router = useRouter()
   // フォーム送信時の処理
   const onSubmit = (data) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -78,44 +82,53 @@ const Login = () => {
     } else {
       setEmailErrFlag(false)
     }
+    confirm(data)
+    router.push('/auth/register_confirm')
   }
   const changeAccountType = (val) => {
     setAccountType(val)
   }
+  const confirm = (data) => {
+    dispatch(
+      { 
+        type: "CONFIRM_REGISTER",
+        payload: data
+      }
+    );
+  };
   return (
-    <LoginGrid>
-      <ThemeProvider theme={theme}>
-        <LoginPaper elevation={3}>
-          <AccountTypeTab accountType={accountType} changeAccountType={changeAccountType} />
-          {accountType == 'business' ? (
-            <>
-              <RegisterPaperTypography>ビジネスアカウント登録</RegisterPaperTypography>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
-                <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
-                <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
-                <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
-                <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
-              </form>
-            </>
-            ) : (
-            <>
-              <RegisterPaperTypography>一般アカウント登録</RegisterPaperTypography>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
-                <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
-                <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
-                <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
-                <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
-              </form>
-            </>
-          )}           
-          <Link href="/auth/login">
-            <a><RegisterTypography>既存のアカウントにログイン</RegisterTypography></a>
-          </Link>
-        </LoginPaper>
-      </ThemeProvider>
-    </LoginGrid>
+    <RegisterGrid>
+      <LoginPaper elevation={3}>
+        <AccountTypeTab accountType={accountType} changeAccountType={changeAccountType} />
+        {accountType == 'business' ? (
+          <>
+            <RegisterPaperTypography>ビジネスアカウント登録</RegisterPaperTypography>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
+              <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
+              <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
+              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
+              <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
+            </form>
+          </>
+          ) : (
+          <>
+            <RegisterPaperTypography>一般アカウント登録</RegisterPaperTypography>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
+              <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
+              <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
+              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
+              <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
+            </form>
+          </>
+        )}           
+        <Link href="/auth/login">
+          <a><RegisterTypography>既存のアカウントにログイン</RegisterTypography></a>
+        </Link>
+      </LoginPaper>
+    </RegisterGrid>
   )
 } 
-export default Login
+
+export default Register
