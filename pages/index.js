@@ -27,7 +27,6 @@ const WrapeprGrid = styled(Grid)`
 export default function Home() {
   return (
     <WrapeprGrid>
-      <p>Count:{store.getState().count}</p>
       <MoveHeader />
       <SearchHeader />
       <Invitation />

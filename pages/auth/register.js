@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import store from "../../redux/store"
 import { useDispatch, useSelector } from "react-redux"
+import axios from 'axios'
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
@@ -69,6 +70,7 @@ const RegisterTypography = styled(Typography)`
 const Register = () => {
   const { register, handleSubmit } = useForm()
   const [emailErrFlag, setEmailErrFlag] = useState(false);
+  const [passwordErrFlag, setPassswordErrFlag] = useState(false);
   const [accountType, setAccountType] = useState('business')
   const storeEmail = useSelector((state) => state.email)
   const dispatch = useDispatch()
@@ -82,8 +84,28 @@ const Register = () => {
     } else {
       setEmailErrFlag(false)
     }
-    confirm(data)
-    router.push('/auth/register_confirm')
+    if(data.password !== data.password_confirm) {
+      setPassswordErrFlag(true)
+      return
+    } else {
+      setPassswordErrFlag(false)
+    }
+    let url = `http://${process.env.NEXT_PUBLIC_API}api/register_check`
+    axios.post(url, data).then(res => {
+      console.log(res.data.code)
+      if(res.data.code == '200') {
+        confirm(data)
+        router.push('/auth/register_confirm')
+      } else {
+        console.log('既に使用されています。')
+      }
+    }).catch(error => {
+      const {
+        status,
+        statusText
+      } = error.response;
+      console.log(`Error! HTTP Status: ${status} ${statusText}`);
+    });
   }
   const changeAccountType = (val) => {
     setAccountType(val)
@@ -107,7 +129,7 @@ const Register = () => {
               <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
               <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
               <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
-              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
+              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} error={passwordErrFlag} required />
               <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
             </form>
           </>
@@ -118,7 +140,7 @@ const Register = () => {
               <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
               <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
               <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
-              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} required />
+              <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} error={passwordErrFlag} required />
               <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
             </form>
           </>

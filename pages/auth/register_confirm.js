@@ -27,7 +27,6 @@ const RegisterConfirm = () => {
   const password = useSelector((state) => state.password)
   const datas = {'ユーザー名':user_name, 'メールアドレス':email, 'パスワード':password}
   const router = useRouter();
-  console.log(router.query)
   return (
     <>
       <ConfirmTable />
