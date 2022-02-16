@@ -16,6 +16,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
 //components
 import AccountTypeTab from '../../components/Parts/Auth/AccountTypeTab'
 const RegisterGrid = styled(Grid)`
@@ -73,6 +74,7 @@ const Register = () => {
   const [passwordErrFlag, setPassswordErrFlag] = useState(false);
   const [accountType, setAccountType] = useState('business')
   const storeEmail = useSelector((state) => state.email)
+  const [alreadyUseEmailFlag, serAlreadyUseEmailFlag] = useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
   // フォーム送信時の処理
@@ -97,6 +99,10 @@ const Register = () => {
         confirm(data)
         router.push('/auth/register_confirm')
       } else {
+        serAlreadyUseEmailFlag(true)
+        setTimeout(() => {
+          serAlreadyUseEmailFlag(false)
+        }, 3000)
         console.log('既に使用されています。')
       }
     }).catch(error => {
@@ -125,8 +131,12 @@ const Register = () => {
         {accountType == 'business' ? (
           <>
             <RegisterPaperTypography>ビジネスアカウント登録</RegisterPaperTypography>
+            {alreadyUseEmailFlag && (
+              <Alert severity="error">メールアドレスは既に使用されています。</Alert>
+            )}
             <form onSubmit={handleSubmit(onSubmit)}>
               <StyledTextField id="outlined-basic" label="ユーザー名" variant="outlined" color={'primary'} {...register("user_name")} required />
+              
               <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
               <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
               <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} error={passwordErrFlag} required />

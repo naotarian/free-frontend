@@ -16,10 +16,15 @@ import Button from '@mui/material/Button'
 import ConfirmTable from '../../components/Parts/ConfirmTable'
 const StyledConfirmTable = styled(TableContainer)`
   width: 50%;
-  margin: 3rem auto;
+  margin: 0 auto;
 `
 const StyledTableHead = styled(TableHead)`
   background: #2e7d32;
+`
+const ConfirmGrid = styled(Grid)`
+  background: #EDFFED;
+  height: 100vh;
+  padding-top: 5rem;
 `
 const RegisterConfirm = () => {
   const email = useSelector((state) => state.email)
@@ -28,9 +33,9 @@ const RegisterConfirm = () => {
   const datas = {'ユーザー名':user_name, 'メールアドレス':email, 'パスワード':password}
   const router = useRouter();
   return (
-    <>
+    <ConfirmGrid>
       <ConfirmTable />
-    </>
+    </ConfirmGrid>
   )
 }
 

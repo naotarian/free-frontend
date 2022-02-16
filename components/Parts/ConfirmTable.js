@@ -10,13 +10,21 @@ import styled from 'styled-components'
 import Paper from '@mui/material/Paper'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from "react-redux"
 const StyledConfirmTable = styled(TableContainer)`
-  width: 50%;
+  width: 500px;
   margin: 3rem auto;
 `
 const StyledTableHead = styled(TableHead)`
   background: #2e7d32;
+`
+const LoginPaperTypography = styled(Typography)`
+  color: #2e7d32;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 2rem;
 `
 const ConfirmTable = () => {
   const email = useSelector((state) => state.email)
@@ -26,13 +34,8 @@ const ConfirmTable = () => {
   console.log(datas)
   return (
     <StyledConfirmTable component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <StyledTableHead>
-          <TableRow>
-            <TableCell>項目</TableCell>
-            <TableCell align="right">入力内容</TableCell>
-          </TableRow>
-        </StyledTableHead>
+      <LoginPaperTypography>入力内容確認</LoginPaperTypography>
+      <Table sx={{ width: 500 }} aria-label="simple table">
         <TableBody>
         {Object.entries(datas).map(([key, data]) => {
           return (
