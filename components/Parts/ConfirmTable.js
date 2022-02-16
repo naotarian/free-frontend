@@ -12,8 +12,10 @@ import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from "react-redux"
+import HowToRegIcon from '@mui/icons-material/HowToReg'
 const StyledConfirmTable = styled(TableContainer)`
-  width: 500px;
+  width: 600px;
+  padding: 2rem;
   margin: 3rem auto;
 `
 const StyledTableHead = styled(TableHead)`
@@ -26,12 +28,38 @@ const LoginPaperTypography = styled(Typography)`
   text-align: center;
   margin-top: 2rem;
 `
+const StyledButton = styled(Button)`
+  @media screen and (min-width:1024px) { 
+    float: right;
+  }
+  @media screen and (max-width:767px) { 
+    margin-top: 2rem;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+`
 const ConfirmTable = () => {
   const email = useSelector((state) => state.email)
   const user_name = useSelector((state) => state.user_name)
   const password = useSelector((state) => state.password)
-  const datas = {'ユーザー名':user_name, 'メールアドレス':email, 'パスワード':password}
+  const datas = {'user_name':user_name, 'email':email, 'password':password}
   console.log(datas)
+  const submit = () => {
+    let url = `http://${process.env.NEXT_PUBLIC_API}api/register_token`
+    axios.post(url, datas).then(res => {
+      console.log(res)
+      if(res.data.msg == 'OK') {
+        //本登録メール送信しました画面に遷移
+      }
+    }).catch(error => {
+      const {
+        status,
+        statusText
+      } = error.response;
+      console.log(`Error! HTTP Status: ${status} ${statusText}`);
+    });
+    console.log(datas)
+  }
   return (
     <StyledConfirmTable component={Paper}>
       <LoginPaperTypography>入力内容確認</LoginPaperTypography>
@@ -52,6 +80,7 @@ const ConfirmTable = () => {
         })}
         </TableBody>
       </Table>
+      <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} onClick={submit} type="submit">登録</StyledButton>
     </StyledConfirmTable>
   )
 }
