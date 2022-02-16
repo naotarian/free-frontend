@@ -17,6 +17,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
+import LoadingButton from '@mui/lab/LoadingButton'
 //components
 import AccountTypeTab from '../../components/Parts/Auth/AccountTypeTab'
 const RegisterGrid = styled(Grid)`
@@ -51,7 +52,7 @@ const StyledTextField = styled(TextField)`
     width: 100%;
   }
 `
-const StyledButton = styled(Button)`
+const StyledButton = styled(LoadingButton)`
   @media screen and (min-width:1024px) { 
     position: absolute;
     bottom: 25px;
@@ -75,30 +76,35 @@ const Register = () => {
   const [accountType, setAccountType] = useState('business')
   const storeEmail = useSelector((state) => state.email)
   const [alreadyUseEmailFlag, serAlreadyUseEmailFlag] = useState(false)
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
   // フォーム送信時の処理
   const onSubmit = (data) => {
+    setLoading(true)
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!emailRegex.test(data.email)) {
       setEmailErrFlag(true)
+      setLoading(false)
       return
     } else {
       setEmailErrFlag(false)
     }
     if(data.password !== data.password_confirm) {
       setPassswordErrFlag(true)
+      setLoading(false)
       return
     } else {
       setPassswordErrFlag(false)
     }
     let url = `http://${process.env.NEXT_PUBLIC_API}api/register_check`
     axios.post(url, data).then(res => {
-      console.log(res.data.code)
       if(res.data.code == '200') {
         confirm(data)
+        setLoading(false)
         router.push('/auth/register_confirm')
       } else {
+        setLoading(false)
         serAlreadyUseEmailFlag(true)
         setTimeout(() => {
           serAlreadyUseEmailFlag(false)
@@ -106,6 +112,8 @@ const Register = () => {
         console.log('既に使用されています。')
       }
     }).catch(error => {
+      console.log(url)
+      setLoading(false)
       const {
         status,
         statusText
@@ -140,7 +148,7 @@ const Register = () => {
               <StyledTextField id="outlined-basic" label="メールアドレス" variant="outlined" color={'primary'} {...register("email")} error={emailErrFlag} required />
               <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
               <StyledTextField id="outlined-password-input" label="パスワード確認" type="password" autoComplete="current-password" color={'primary'} {...register("password_confirm")} error={passwordErrFlag} required />
-              <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
+              <StyledButton variant="contained" loading={loading} color={'primary'} startIcon={<HowToRegIcon />} type="submit">登録</StyledButton>
             </form>
           </>
           ) : (

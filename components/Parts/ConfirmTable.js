@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import axios from 'axios'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -13,6 +14,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from "react-redux"
 import HowToRegIcon from '@mui/icons-material/HowToReg'
+import LoadingButton from '@mui/lab/LoadingButton'
 const StyledConfirmTable = styled(TableContainer)`
   width: 600px;
   padding: 2rem;
@@ -28,7 +30,7 @@ const LoginPaperTypography = styled(Typography)`
   text-align: center;
   margin-top: 2rem;
 `
-const StyledButton = styled(Button)`
+const StyledButton = styled(LoadingButton)`
   @media screen and (min-width:1024px) { 
     float: right;
   }
@@ -42,16 +44,21 @@ const ConfirmTable = () => {
   const email = useSelector((state) => state.email)
   const user_name = useSelector((state) => state.user_name)
   const password = useSelector((state) => state.password)
+  const [loading, setLoading] = useState(false)
   const datas = {'user_name':user_name, 'email':email, 'password':password}
-  console.log(datas)
+  const router = useRouter()
   const submit = () => {
+    setLoading(true)
     let url = `http://${process.env.NEXT_PUBLIC_API}api/register_token`
     axios.post(url, datas).then(res => {
       console.log(res)
+      setLoading(false)
       if(res.data.msg == 'OK') {
         //本登録メール送信しました画面に遷移
+        router.push('/auth/temporary_done')
       }
     }).catch(error => {
+      console.log(url)
       const {
         status,
         statusText
@@ -80,7 +87,7 @@ const ConfirmTable = () => {
         })}
         </TableBody>
       </Table>
-      <StyledButton variant="contained" color={'primary'} startIcon={<HowToRegIcon />} onClick={submit} type="submit">登録</StyledButton>
+      <StyledButton variant="contained" loading={loading} color={'primary'} startIcon={<HowToRegIcon />} onClick={submit} type="submit">登録</StyledButton>
     </StyledConfirmTable>
   )
 }
