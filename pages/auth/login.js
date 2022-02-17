@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
 import styled from 'styled-components'
@@ -65,7 +66,28 @@ const Login = () => {
     } else {
       setEmailErrFlag(false)
     }
-    console.log(data)
+    let url = `${process.env.NEXT_PUBLIC_API}sanctum/csrf-cookie`
+    let login = `${process.env.NEXT_PUBLIC_API}login`
+    let email = data.email
+    let password = data.password
+    const loginParams = { email,password}
+    console.log(loginParams)
+    axios.get(url, { withCredentials: true }).then(response => {
+      // ログイン処理を実装する
+      axios.post(login,loginParams,{ withCredentials: true }).then(response => {
+        console.log(response)
+      })
+    })
+  }
+  const api = () => {
+    axios.get(`${process.env.NEXT_PUBLIC_API}api/user`, { withCredentials: true }).then((response) => {
+      console.log(response.data)
+    })
+  }
+  const logout = () => {
+    axios.get(`${process.env.NEXT_PUBLIC_API}api/logout`, { withCredentials: true }).then((response) => {
+      console.log(response.data)
+    })
   }
   return (
     <LoginGrid>
@@ -77,11 +99,13 @@ const Login = () => {
             <StyledTextField id="outlined-password-input" label="パスワード" type="password" autoComplete="current-password" color={'primary'} {...register("password")} required />
             <StyledButton variant="contained" color={'primary'} startIcon={<LoginIcon />} type="submit">ログイン</StyledButton>
           </form>
+          <StyledButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={api}>API</StyledButton>
           <Link href="/auth/register">
             <a><RegisterTypography>新規アカウント登録はこちら</RegisterTypography></a>
           </Link>
         </LoginPaper>
       </ThemeProvider>
+      <StyledButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={logout}>ログアウト</StyledButton>
     </LoginGrid>
   )
 } 

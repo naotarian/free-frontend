@@ -98,6 +98,10 @@ const Register = () => {
       setPassswordErrFlag(false)
     }
     let url = `${process.env.NEXT_PUBLIC_API}api/register_check`
+    var axiosPost = axios.create({
+      xsrfHeaderName: "X-XSRF-TOKEN",
+      withCredentials: true
+    })
     axios.post(url, data).then(res => {
       if(res.data.code == '200') {
         confirm(data)
