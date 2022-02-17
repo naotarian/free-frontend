@@ -44,28 +44,26 @@ const ConfirmTable = () => {
   const email = useSelector((state) => state.email)
   const user_name = useSelector((state) => state.user_name)
   const password = useSelector((state) => state.password)
+  const accountType = useSelector((state) => state.accountType)
   const [loading, setLoading] = useState(false)
-  const datas = {'user_name':user_name, 'email':email, 'password':password}
+  const datas = {'user_name':user_name, 'email':email, 'password':password, 'accountType':accountType}
   const router = useRouter()
   const submit = () => {
     setLoading(true)
-    let url = `http://${process.env.NEXT_PUBLIC_API}api/register_token`
+    let url = `${process.env.NEXT_PUBLIC_API}api/register_token`
     axios.post(url, datas).then(res => {
-      console.log(res)
       setLoading(false)
       if(res.data.msg == 'OK') {
         //本登録メール送信しました画面に遷移
         router.push('/auth/temporary_done')
       }
     }).catch(error => {
-      console.log(url)
       const {
         status,
         statusText
-      } = error.response;
-      console.log(`Error! HTTP Status: ${status} ${statusText}`);
+      } = error.response
+      console.log(`Error! HTTP Status: ${status} ${statusText}`)
     });
-    console.log(datas)
   }
   return (
     <StyledConfirmTable component={Paper}>

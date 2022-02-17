@@ -97,7 +97,7 @@ const Register = () => {
     } else {
       setPassswordErrFlag(false)
     }
-    let url = `http://${process.env.NEXT_PUBLIC_API}api/register_check`
+    let url = `${process.env.NEXT_PUBLIC_API}api/register_check`
     axios.post(url, data).then(res => {
       if(res.data.code == '200') {
         confirm(data)
@@ -109,26 +109,25 @@ const Register = () => {
         setTimeout(() => {
           serAlreadyUseEmailFlag(false)
         }, 3000)
-        console.log('既に使用されています。')
       }
     }).catch(error => {
-      console.log(url)
       setLoading(false)
       const {
         status,
         statusText
-      } = error.response;
-      console.log(`Error! HTTP Status: ${status} ${statusText}`);
+      } = error.response
+      console.log(`Error! HTTP Status: ${status} ${statusText}`)
     });
   }
   const changeAccountType = (val) => {
     setAccountType(val)
   }
   const confirm = (data) => {
+    data.accountType = accountType
     dispatch(
       { 
         type: "CONFIRM_REGISTER",
-        payload: data
+        payload: data,
       }
     );
   };

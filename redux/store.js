@@ -3,7 +3,7 @@ const initialState = {
   email: '',
   user_name: '',
   password: '',
-  password_confirm: ''
+  accountType: ''
 };
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -12,7 +12,7 @@ const reducer = (state = initialState, action) => {
         email: state.email = action.payload.email,
         user_name: state.user_name = action.payload.user_name,
         password : state.password = action.payload.password,
-        
+        accountType: state.accountType = action.payload.accountType,
       };
     default:
       return state;
