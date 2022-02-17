@@ -12,6 +12,7 @@ import {theme} from '../../components/common/theme/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import LoginIcon from '@mui/icons-material/Login'
+import Alert from '@mui/material/Alert'
 const LoginGrid = styled(Grid)`
   background: #CCECCC;
   height: 100vh;
@@ -52,14 +53,24 @@ const RegisterTypography = styled(Typography)`
   margin-top: 2rem;
   color: #333;
 `
+const StyledAlert = styled(Alert)`
+  width: 50%;
+  margin: 1rem auto;
+`
 
 const Login = () => {
   const { register, handleSubmit } = useForm()
-  const [emailErrFlag, setEmailErrFlag] = useState(false);
+  const [emailErrFlag, setEmailErrFlag] = useState(false)
+  const [unauthorized, setUnauthorized] = useState(false)
+  const [mistaken, setMistaken] = useState(false)
+  const [successLogin, setSuccessLogin] = useState(false)
+  const Axios = axios.create({
+    xsrfHeaderName: 'X-CSRF-Token',
+    withCredentials: true
+  })
   // フォーム送信時の処理
   const onSubmit = (data) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    // if (!emailRegex.test(data.email)) return '※正しい形式でメールアドレスを入力してください';
     if (!emailRegex.test(data.email)) {
       setEmailErrFlag(true)
       return
@@ -71,27 +82,54 @@ const Login = () => {
     let email = data.email
     let password = data.password
     const loginParams = { email,password}
-    console.log(loginParams)
     axios.get(url, { withCredentials: true }).then(response => {
       // ログイン処理を実装する
       axios.post(login,loginParams,{ withCredentials: true }).then(response => {
-        console.log(response)
+        if(response.data.msg != 'OK') {
+          setMistaken(true)
+          setTimeout(() => {
+            setMistaken(false)
+          }, 3000)
+        }
+        setSuccessLogin(true)
+        setTimeout(() => {
+          setSuccessLogin(false)
+        }, 3000)
       })
     })
   }
   const api = () => {
     axios.get(`${process.env.NEXT_PUBLIC_API}api/user`, { withCredentials: true }).then((response) => {
-      console.log(response.data)
-    })
+    }).catch(error => {
+      const {
+        status,
+        statusText
+      } = error.response
+      if(status == '401') {
+        setUnauthorized(true)
+        setTimeout(() => {
+          setUnauthorized(false)
+        }, 6000)
+      }
+      // console.log(`Error! HTTP Status: ${status} ${statusText}`)
+    });
   }
   const logout = () => {
     axios.get(`${process.env.NEXT_PUBLIC_API}api/logout`, { withCredentials: true }).then((response) => {
-      console.log(response.data)
     })
   }
   return (
     <LoginGrid>
       <ThemeProvider theme={theme}>
+        {unauthorized && (
+          <StyledAlert severity="error">ログインしてください。</StyledAlert>
+        )}
+        {mistaken && (
+          <StyledAlert severity="error">メールアドレス又は、パスワードが間違っています。</StyledAlert>
+        )}
+        {successLogin && (
+          <StyledAlert severity="success">ログインしました。</StyledAlert>
+        )}
         <LoginPaper elevation={3}>
           <LoginPaperTypography>ログイン</LoginPaperTypography>
           <form onSubmit={handleSubmit(onSubmit)}>
