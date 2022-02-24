@@ -3,6 +3,7 @@ import axios from 'axios'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
 import styled from 'styled-components'
+import { useDispatch, useSelector } from "react-redux"
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
@@ -64,6 +65,7 @@ const Login = () => {
   const [unauthorized, setUnauthorized] = useState(false)
   const [mistaken, setMistaken] = useState(false)
   const [successLogin, setSuccessLogin] = useState(false)
+  const dispatch = useDispatch()
   const Axios = axios.create({
     xsrfHeaderName: 'X-CSRF-Token',
     withCredentials: true
@@ -78,7 +80,7 @@ const Login = () => {
       setEmailErrFlag(false)
     }
     let url = `${process.env.NEXT_PUBLIC_API}sanctum/csrf-cookie`
-    let login = `${process.env.NEXT_PUBLIC_API}login`
+    let login = `${process.env.NEXT_PUBLIC_API}api/login`
     let email = data.email
     let password = data.password
     const loginParams = { email,password}
@@ -90,16 +92,32 @@ const Login = () => {
           setTimeout(() => {
             setMistaken(false)
           }, 3000)
+        } else {
+          console.log(response.config.headers['X-XSRF-TOKEN'])
+          Token(response.config.headers['X-XSRF-TOKEN'])
+          setSuccessLogin(true)
+          setTimeout(() => {
+            setSuccessLogin(false)
+          }, 3000)
         }
-        setSuccessLogin(true)
-        setTimeout(() => {
-          setSuccessLogin(false)
-        }, 3000)
       })
     })
   }
+  const Token = (data) => {
+    let token = {}
+    token.csrf = data
+    console.log(token.csrf)
+    dispatch(
+      { 
+        type: "SET_TOKEN",
+        payload: token,
+      }
+    )
+  }
   const api = () => {
-    axios.get(`${process.env.NEXT_PUBLIC_API}api/user`, { withCredentials: true }).then((response) => {
+    let data = {'email': 'test@test.com', 'password': 'test', 'withCredentials': true }
+    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data).then((response) => {
+      console.log(response)
     }).catch(error => {
       const {
         status,

@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid'
 //components
 import MoveHeader from '../components/Parts/Header/MoveHeader'
+import Header from '../components/Parts/Header/Header'
 import SearchHeader from '../components/Parts/Header/SearchHeader'
 import Invitation from '../components/Parts/Invitation'
 import SlideInformation from '../components/Parts/SlideInformation'
@@ -28,6 +29,7 @@ export default function Home() {
   return (
     <WrapeprGrid>
       <MoveHeader />
+      <Header />
       <SearchHeader />
       <Invitation />
       <SlideInformation />
