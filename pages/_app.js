@@ -6,14 +6,17 @@ import {theme} from '../components/common/theme/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import { Provider } from "react-redux"
 import store from "../redux/store"
+import { CookiesProvider } from "react-cookie"
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
-      </ThemeProvider>
-    </Provider>
+    <CookiesProvider>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </Provider>
+    </CookiesProvider>
   )
 }
 

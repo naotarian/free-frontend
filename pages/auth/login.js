@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
 import styled from 'styled-components'
+import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
 //mui
 import Grid from '@mui/material/Grid'
@@ -14,6 +15,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import LoginIcon from '@mui/icons-material/Login'
 import Alert from '@mui/material/Alert'
+import { useCookies } from "react-cookie"
 const LoginGrid = styled(Grid)`
   background: #CCECCC;
   height: 100vh;
@@ -60,16 +62,20 @@ const StyledAlert = styled(Alert)`
 `
 
 const Login = () => {
+  useEffect(() => {
+    let token = window.localStorage.getItem('token')
+    if(token) {
+      router.push('/')
+    }
+  }) 
+  const router = useRouter()
   const { register, handleSubmit } = useForm()
   const [emailErrFlag, setEmailErrFlag] = useState(false)
   const [unauthorized, setUnauthorized] = useState(false)
   const [mistaken, setMistaken] = useState(false)
   const [successLogin, setSuccessLogin] = useState(false)
+  const [token, setToken] = useState('')
   const dispatch = useDispatch()
-  const Axios = axios.create({
-    xsrfHeaderName: 'X-CSRF-Token',
-    withCredentials: true
-  })
   // フォーム送信時の処理
   const onSubmit = (data) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -93,8 +99,7 @@ const Login = () => {
             setMistaken(false)
           }, 3000)
         } else {
-          console.log(response.config.headers['X-XSRF-TOKEN'])
-          Token(response.config.headers['X-XSRF-TOKEN'])
+          window.localStorage.setItem('token', response.data.access_token);
           setSuccessLogin(true)
           setTimeout(() => {
             setSuccessLogin(false)
@@ -103,20 +108,14 @@ const Login = () => {
       })
     })
   }
-  const Token = (data) => {
-    let token = {}
-    token.csrf = data
-    console.log(token.csrf)
-    dispatch(
-      { 
-        type: "SET_TOKEN",
-        payload: token,
-      }
-    )
-  }
   const api = () => {
+    const token = window.localStorage.getItem('token')
     let data = {'email': 'test@test.com', 'password': 'test', 'withCredentials': true }
-    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data).then((response) => {
+    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }).then((response) => {
       console.log(response)
     }).catch(error => {
       const {
@@ -131,6 +130,21 @@ const Login = () => {
       }
       // console.log(`Error! HTTP Status: ${status} ${statusText}`)
     });
+    // axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data ).then((response) => {
+    //   console.log(response)
+    // }).catch(error => {
+    //   const {
+    //     status,
+    //     statusText
+    //   } = error.response
+    //   if(status == '401') {
+    //     setUnauthorized(true)
+    //     setTimeout(() => {
+    //       setUnauthorized(false)
+    //     }, 6000)
+    //   }
+    //   // console.log(`Error! HTTP Status: ${status} ${statusText}`)
+    // });
   }
   const logout = () => {
     axios.get(`${process.env.NEXT_PUBLIC_API}api/logout`, { withCredentials: true }).then((response) => {

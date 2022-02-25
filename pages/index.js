@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
@@ -26,10 +26,15 @@ const WrapeprGrid = styled(Grid)`
 `
 
 export default function Home() {
+  const [token, setToken] = useState('')
+  useEffect(() => {
+    let backendToken = window.localStorage.getItem('token')
+    setToken(backendToken)
+  }, [])
   return (
     <WrapeprGrid>
       <MoveHeader />
-      <Header />
+      <Header token={token} />
       <SearchHeader />
       <Invitation />
       <SlideInformation />
