@@ -3,7 +3,7 @@ const initialState = {
   email: '',
   user_name: '',
   password: '',
-  accountType: ''
+  accountType: '',
 };
 const reducer = (state = initialState, action) => {
   switch (action.type) {

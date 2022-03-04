@@ -3,7 +3,6 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import store from "../../redux/store"
 import { useDispatch, useSelector } from "react-redux"
 import axios from 'axios'
 //mui
@@ -134,7 +133,7 @@ const Register = () => {
         payload: data,
       }
     );
-  };
+  }
   return (
     <RegisterGrid>
       <LoginPaper elevation={3}>
