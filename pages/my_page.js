@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
+import { SubmitHandler, useForm } from 'react-hook-form'
 //components
 import MoveHeader from '../components/Parts/Header/MoveHeader'
 import Header from '../components/Parts/Header/Header'
@@ -38,7 +39,9 @@ const FlexBox = styled(Box)`
 const MyPage = () => {
   const router = useRouter()
   const [token, setToken] = useState('')
+  const { userInformationForm, handleSubmit } = useForm()
   const [userData, setUserData] = useState(null)
+  const [pageNum, setPageNum] = useState(1)
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
     if(!backendToken) {
@@ -53,7 +56,10 @@ const MyPage = () => {
       }
     }).then((response) => {
       if(response.data) {
+        console.log(response.data)
         setUserData(response.data)
+      } else {
+        router.push('/')
       }
     }).catch(error => {
       const {
@@ -62,8 +68,29 @@ const MyPage = () => {
       } = error.response
     })
       setToken(backendToken)
-    }, [])
-
+  }, [])
+    
+  const switchPage = () => {
+    switch(pageNum) {
+      case 1:
+        return(
+          <>
+            {userData && (
+              <InformationTable userData={userData} userInformationForm={userInformationForm} handleSubmit={handleSubmit} />
+            )}
+          </>
+        )
+      default:
+        return(
+          <>
+            掲載情報
+          </>
+        )
+    }
+  }
+  const changeNum = (index) => {
+    setPageNum(index + 1)
+  }
   return (
     <WrapeprGrid>
       <MoveHeader />
@@ -71,7 +98,7 @@ const MyPage = () => {
         <StyledSideBox>
           <List>
             {['ユーザー基本情報', '掲載情報'].map((text, index) => (
-              <ListItem button key={text}>
+              <ListItem button key={text} onClick={() => changeNum(index)}>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -81,8 +108,9 @@ const MyPage = () => {
           </List>
           <Divider />
         </StyledSideBox>
+        
         <InformationField>
-          <InformationTable userData={userData}/>
+          {switchPage(pageNum)}
         </InformationField>
       </FlexBox>
     </WrapeprGrid>
