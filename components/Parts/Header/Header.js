@@ -47,10 +47,15 @@ const Header = (props) => {
   const login = () => {
     router.push('/auth/login')
   }
+  const myPage = () => {
+    router.push('/my_page')
+  }
   return (
     <HeaderGrid>
-        {authenticated && (
+        {authenticated ? (
           <StyledLoginButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={login} type="submit">ログイン</StyledLoginButton>
+        ) : (
+          <StyledLoginButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={myPage} type="submit">マイページ</StyledLoginButton>
         )}
     </HeaderGrid>
   )

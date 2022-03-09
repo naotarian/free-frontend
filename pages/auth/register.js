@@ -70,8 +70,8 @@ const RegisterTypography = styled(Typography)`
 
 const Register = () => {
   const { register, handleSubmit } = useForm()
-  const [emailErrFlag, setEmailErrFlag] = useState(false);
-  const [passwordErrFlag, setPassswordErrFlag] = useState(false);
+  const [emailErrFlag, setEmailErrFlag] = useState(false)
+  const [passwordErrFlag, setPassswordErrFlag] = useState(false)
   const [accountType, setAccountType] = useState('business')
   const storeEmail = useSelector((state) => state.email)
   const [alreadyUseEmailFlag, serAlreadyUseEmailFlag] = useState(false)
