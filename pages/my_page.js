@@ -38,17 +38,17 @@ const FlexBox = styled(Box)`
 `
 const MyPage = () => {
   const router = useRouter()
-  const [token, setToken] = useState('')
   const { userInformationForm, handleSubmit } = useForm()
   const [userData, setUserData] = useState(null)
   const [pageNum, setPageNum] = useState(1)
+  //ページロード時発火
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
     if(!backendToken) {
+      //トークンがない場合はリダイレクト
       router.push('/')
     }
-    setToken(backendToken)
-      //ログインチェック
+    //ログインチェック
     let data = {}
     axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
       headers: {
@@ -56,10 +56,10 @@ const MyPage = () => {
       }
     }).then((response) => {
       if(response.data) {
-        console.log(response.data)
         setUserData(response.data)
       } else {
-        router.push('/')
+        //未ログイン時リダイレクト
+        router.push('/auth/login')
       }
     }).catch(error => {
       const {
@@ -67,9 +67,8 @@ const MyPage = () => {
         statusText
       } = error.response
     })
-      setToken(backendToken)
   }, [])
-    
+  //タブ切り替え処理
   const switchPage = () => {
     switch(pageNum) {
       case 1:
@@ -108,7 +107,6 @@ const MyPage = () => {
           </List>
           <Divider />
         </StyledSideBox>
-        
         <InformationField>
           {switchPage(pageNum)}
         </InformationField>
