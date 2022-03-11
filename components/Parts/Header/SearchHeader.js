@@ -1,5 +1,8 @@
 import React,{ useState, useEffect } from 'react'
 import styled from 'styled-components'
+import axios from 'axios'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 //mui
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -10,14 +13,19 @@ const SearchHeaderGrid = styled(Grid)`
 `
 
 const SearchHeader = (props) => {
-  const {categories} = props
-  const selectCategory = (id) => {
-    console.log(id)
+  const {categories, token} = props
+  const router = useRouter()
+  const selectCategory = (text) => {
+    router.push({
+      pathname: `/matters`, // 遷移先のページ
+      query: { category:text['id'], name:text['name'] },
+      as: '/matter'
+    });
   }
   return (
     <SearchHeaderGrid>
       <ul className="search_list">
-        {categories.map((text, index) => <li key={index} onClick={() => selectCategory(text['id'])}>{text['name']}</li>)}
+        {categories.map((text, index) => <li key={index} onClick={() => selectCategory(text)}>{text['name']}</li>)}
       </ul>
     </SearchHeaderGrid>
   )

@@ -55,7 +55,7 @@ export default function Home() {
       <MoveHeader />
       <Header token={token} />
       {categories && 
-        <SearchHeader categories={categories} />
+        <SearchHeader categories={categories} token={token} />
       }
       <Invitation />
       <SlideInformation />
