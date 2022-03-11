@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
+import axios from 'axios'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
@@ -27,15 +28,35 @@ const WrapeprGrid = styled(Grid)`
 
 export default function Home() {
   const [token, setToken] = useState('')
+  const [categories, setCategories] = useState([])
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
+    let data = {}
+    let url = `${process.env.NEXT_PUBLIC_API}api/index_get`
+    axios.post(url,data, {
+      headers: {
+        Authorization: `Bearer ${backendToken}`,
+      }
+    }).then((response) => {
+      if(response.data.default_info.categories) {
+        setCategories(response.data.default_info.categories)
+      }
+      console.log(response)
+    }).catch(error => {
+      const {
+        status,
+        statusText
+      } = error.response
+    })
     setToken(backendToken)
   }, [])
   return (
     <WrapeprGrid>
       <MoveHeader />
       <Header token={token} />
-      <SearchHeader />
+      {categories && 
+        <SearchHeader categories={categories} />
+      }
       <Invitation />
       <SlideInformation />
       <UseCase />

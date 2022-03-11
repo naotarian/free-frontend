@@ -121,7 +121,6 @@ const InformationTable = (props) =>  {
       if(res.status == '200') {
         if(res.data.data.status) {
           setEditMessageSuccess(res.data.data.msg)
-          console.log(nowCategoryArray[res.data.category_detail_id - 1])
           setChangeCategory(nowCategoryArray[res.data.category_detail_id - 1])
           setTimeout(() => {
             setEditMessageSuccess(null)
@@ -155,8 +154,6 @@ const InformationTable = (props) =>  {
     setSelectedCategory2(category2[selectedCategoryIndex][event.target.value])
   };
   const category = () => {
-    console.log(changeCategory)
-    console.log(nowCategory)
     if(changeCategory) {
       return (
         <Typography>{changeCategory}</Typography>

@@ -9,24 +9,15 @@ const SearchHeaderGrid = styled(Grid)`
   background: #205723;
 `
 
-const SearchHeader = () => {
+const SearchHeader = (props) => {
+  const {categories} = props
+  const selectCategory = (id) => {
+    console.log(id)
+  }
   return (
     <SearchHeaderGrid>
       <ul className="search_list">
-        <li>エンジニア・プログラマー</li>
-        <li>IT・Webコンサルタント</li>
-        <li>Webデザイナー</li>
-        <li>イラストレーター</li>
-        <li>ボイストレーナー</li>
-        <li>フォトグラファー</li>
-        <li>映像クリエイター</li>
-        <li>グラフィックデザイナー</li>
-        <li>Webライター</li>
-        <li>動画編集</li>
-        <li>コピーライター</li>
-        <li>ブロガー</li>
-        <li>広告・PR</li>
-        <li>スポーツトレーナー</li>
+        {categories.map((text, index) => <li key={index} onClick={() => selectCategory(text['id'])}>{text['name']}</li>)}
       </ul>
     </SearchHeaderGrid>
   )
