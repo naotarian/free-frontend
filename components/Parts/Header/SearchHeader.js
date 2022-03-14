@@ -1,5 +1,8 @@
 import React,{ useState, useEffect } from 'react'
 import styled from 'styled-components'
+import axios from 'axios'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 //mui
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -9,24 +12,20 @@ const SearchHeaderGrid = styled(Grid)`
   background: #205723;
 `
 
-const SearchHeader = () => {
+const SearchHeader = (props) => {
+  const {categories, token} = props
+  const router = useRouter()
+  const selectCategory = (text) => {
+    router.push({
+      pathname: `/matters`, // 遷移先のページ
+      query: { category:text['id'], name:text['name'] },
+      as: '/matter'
+    });
+  }
   return (
     <SearchHeaderGrid>
       <ul className="search_list">
-        <li>エンジニア・プログラマー</li>
-        <li>IT・Webコンサルタント</li>
-        <li>Webデザイナー</li>
-        <li>イラストレーター</li>
-        <li>ボイストレーナー</li>
-        <li>フォトグラファー</li>
-        <li>映像クリエイター</li>
-        <li>グラフィックデザイナー</li>
-        <li>Webライター</li>
-        <li>動画編集</li>
-        <li>コピーライター</li>
-        <li>ブロガー</li>
-        <li>広告・PR</li>
-        <li>スポーツトレーナー</li>
+        {categories.map((text, index) => <li key={index} onClick={() => selectCategory(text)}>{text['name']}</li>)}
       </ul>
     </SearchHeaderGrid>
   )

@@ -37,7 +37,6 @@ const Header = (props) => {
     if(response.data.data) {
       setAuthenticated(true)
     }
-    console.log(response)
   }).catch(error => {
     const {
       status,

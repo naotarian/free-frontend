@@ -18,7 +18,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import MailIcon from '@mui/icons-material/Mail'
+import Typography from '@mui/material/Typography'
 const WrapeprGrid = styled(Grid)`
   margin: 0;
   padding: 0;
@@ -35,6 +36,10 @@ const StyledSideBox = styled(Box)`
 `
 const FlexBox = styled(Box)`
   display: flex;
+`
+const EditLinkTypo = styled(Typography)`
+  cursor: pointer;
+  color: #2e7d32;
 `
 const MyPage = () => {
   const router = useRouter()
@@ -68,6 +73,9 @@ const MyPage = () => {
       } = error.response
     })
   }, [])
+  const createMatter = () => {
+    router.push('/institution/create_matter')
+  }
   //タブ切り替え処理
   const switchPage = () => {
     switch(pageNum) {
@@ -83,6 +91,7 @@ const MyPage = () => {
         return(
           <>
             掲載情報
+            <EditLinkTypo onClick={createMatter}>案件登録</EditLinkTypo>
           </>
         )
     }
