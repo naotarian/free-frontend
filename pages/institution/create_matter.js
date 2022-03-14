@@ -14,8 +14,6 @@ import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
 import TextField from '@mui/material/TextField'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
@@ -24,14 +22,18 @@ import jaLocale from 'date-fns/locale/ja'
 import isWeekend from 'date-fns/isWeekend'
 import LoadingButton from '@mui/lab/LoadingButton'
 import StaticDatePicker from '@mui/lab/StaticDatePicker'
-import AddIcon from '@mui/icons-material/Add'
-import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
+//icons
+import InboxIcon from '@mui/icons-material/MoveToInbox'
+import MailIcon from '@mui/icons-material/Mail'
+import AddIcon from '@mui/icons-material/Add'
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 //components
 import MoveHeader from '../../components/Parts/Header/MoveHeader'
 const WrapeprGrid = styled(Grid)`
@@ -70,8 +72,17 @@ const ButtonArea = styled(Grid)`
 const StyledButton = styled(LoadingButton)`
   margin-left: 1rem;
 `
+const StyledDeleteButton = styled(LoadingButton)`
+  height: 32px;
+`
 const ContentArea = styled(TextField)`
   width: 100%;
+`
+const TitleFlex = styled(Grid)`
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 3px;
 `
 const CreateMatter = () => {
   const [value, setValue] = useState(new Date())
@@ -86,6 +97,7 @@ const CreateMatter = () => {
     datas.yaer = value ? value.getFullYear() : null
     datas.month = value ? value.getMonth() + 1 : null
     datas.day = value ? value.getDate() : null
+    console.log(datas)
   }
   const addContent = () => {
     let tmpContentNum = defaultContentNum.length + 1
@@ -101,6 +113,17 @@ const CreateMatter = () => {
         setContentOver(false)
       }, 5000)
     }
+  }
+  const deleteContent = (data) => {
+    let tmpContentNum = defaultContentNum.length
+    let tmpContentNumArray = []
+    for(let i = 0; i < tmpContentNum; i++) {
+      if(i != data) {
+        tmpContentNumArray.push(i + 1)
+      }
+    }
+    console.log(tmpContentNumArray)
+    setDefaultContentNum(tmpContentNumArray)
   }
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -128,20 +151,26 @@ const CreateMatter = () => {
             </SettingItem>
             { defaultContentNum.map((text, index) => (
                 <SettingItem key={index}>
-                  <TitleTypo>タイトル{index + 1}</TitleTypo>
+                  <TitleFlex>
+                    <TitleTypo>タイトル{text}</TitleTypo>
+                    { index != 0 && 
+                      <StyledButton variant="contained" color='warning' size="small" startIcon={<DeleteForeverIcon />} type="button" onClick={() => deleteContent(index)} loading={loading}>コンテンツ削除</StyledButton>
+                    }
+                  </TitleFlex>
                   <TextField fullWidth id="fullWidth" defaultValue='タイトル' {...register(`title${index + 1}`)} />
-                  <TitleTypo>説明文{index + 1}</TitleTypo>
+                  <TitleTypo>説明文{text}</TitleTypo>
                   <ContentArea
                     id="outlined-multiline-static"
                     label=""
                     multiline
                     rows={8}
+                    {...register(`content${index + 1}`)}
                     defaultValue='内容'
                   />
                 </SettingItem>
               ))}
           <ButtonArea>
-            <StyledButton variant="contained" color='secondary' startIcon={<AddIcon />} type="button" onClick={addContent} loading={loading}>コンテンツ追加</StyledButton>
+            <StyledButton variant="contained" color='info' startIcon={<AddIcon />} type="button" onClick={addContent} loading={loading}>コンテンツ追加</StyledButton>
             <StyledButton variant="contained" color={'primary'} startIcon={<ChangeCircleIcon />} type="submit" loading={loading}>更新</StyledButton>
           </ButtonArea>
           </SettingArea>
