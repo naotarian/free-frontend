@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import axios from 'axios'
 import styled from 'styled-components'
 import { SubmitHandler, useForm, Controller } from 'react-hook-form'
+import { animateScroll as scroll } from "react-scroll"
 //mui
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -28,6 +29,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
+import Alert from '@mui/material/Alert'
 //icons
 import InboxIcon from '@mui/icons-material/MoveToInbox'
 import MailIcon from '@mui/icons-material/Mail'
@@ -36,6 +38,7 @@ import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 //components
 import MoveHeader from '../../components/Parts/Header/MoveHeader'
+import Header from '../../components/Parts/Header/Header'
 const WrapeprGrid = styled(Grid)`
   margin: 0 auto;
   padding: 0;
@@ -84,20 +87,104 @@ const TitleFlex = styled(Grid)`
   align-items: end;
   margin-bottom: 3px;
 `
+const ErrAlert = styled(Alert)`
+  margin-top: 2rem;
+`
 const CreateMatter = () => {
   const [value, setValue] = useState(new Date())
   const [contentsNum, setContentsNum] = useState(1)
   const { register, handleSubmit } = useForm()
+  const [userData, setUserData] = useState(null)
   const [contents, setContents] = useState([{}])
   const [defaultContentNum, setDefaultContentNum] = useState([1])
   const [contentOver, setContentOver] = useState(false)
-  // const [contents, setContents] = useState([{'title':'test1','content':'test1'},{'title':'test2','content':'test2'}])
+  const [token, setToken] = useState(null)
+  const [subTitleLengthErr, setSubTitleLengthErr] = useState(false)
+  const [contentsLengthErr, setContentsLengthErr] = useState(false)
+  const [titleExe, setTitleExe] = useState(false)
+  const [titleLengthErr, setTitleLengthErr] = useState(false)
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    let backendToken = window.localStorage.getItem('token')
+    setToken(backendToken)
+    let data = {}
+    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
+      headers: {
+        Authorization: `Bearer ${backendToken}`,
+      }
+    }).then((response) => {
+      if(response.data) {
+        setUserData(response.data)
+      } else {
+        //未ログイン時リダイレクト
+        router.push('/auth/login')
+      }
+    }).catch(error => {
+      const {
+        status,
+        statusText
+      } = error.response
+    })
+  }, [])
   const onSubmit = (datas) => {
+    console.log(datas)
+    if(datas.title == '') {
+      scroll.scrollToTop()
+      setTitleExe(true)
+      setTimeout(() => {
+        setTitleExe(false)
+      }, 3000)
+      return
+    }
+    if(datas.title.length > 100) {
+      scroll.scrollToTop()
+      setTitleLengthErr(true)
+      setTimeout(() => {
+        setTitleLengthErr(false)
+      }, 3000)
+      return
+    }
+    for(let i = 0; i < 10; i++) {
+      if ('sub_title_' + i in datas) {
+        if(datas['sub_title_' + i].length > 100) {
+          scroll.scrollToTop()
+          setSubTitleLengthErr(true)
+          setTimeout(() => {
+            setSubTitleLengthErr(false)
+          }, 3000)
+          return
+        }
+      }
+      if ('content_' + i in datas) {
+        if(datas['content_' + i].length > 3000) {
+          scroll.scrollToTop()
+          setContentsLengthErr(true)
+          setTimeout(() => {
+            setContentsLengthErr(false)
+          }, 3000)
+          return
+        }
+      }
+    }
+    datas.user_id = userData.id
     datas.yaer = value ? value.getFullYear() : null
     datas.month = value ? value.getMonth() + 1 : null
     datas.day = value ? value.getDate() : null
-    console.log(datas)
+    let url = `${process.env.NEXT_PUBLIC_API}api/create_matters`
+    axios.post(url, datas, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }).then(res => {
+    }).catch(error => {
+      setLoading(false)
+      const {
+        status,
+        statusText
+      } = error.response
+      console.log(`Error! HTTP Status: ${status} ${statusText}`)
+    });
   }
   const addContent = () => {
     let tmpContentNum = defaultContentNum.length + 1
@@ -131,10 +218,27 @@ const CreateMatter = () => {
   return (
     <WrapeprGrid>
       <MoveHeader />
+      <Header token={token}/>
       <ContentWrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
           <PageTitle>案件登録</PageTitle>
+            {titleLengthErr && (
+              <ErrAlert severity="error">タイトルの最大文字数は100文字です。</ErrAlert>
+            )}
+            {titleExe && (
+              <ErrAlert severity="error">タイトルは必須項目です。</ErrAlert>
+            )}
+            {subTitleLengthErr && (
+              <ErrAlert severity="error">サブタイトルの最大文字数は100文字です。</ErrAlert>
+            )}
+            {contentsLengthErr && (
+              <ErrAlert severity="error">コンテンツの最大文字数は3000文字です。</ErrAlert>
+            )}
           <SettingArea>
+            <SettingItem>
+              <TitleTypo>案件タイトル(最大100文字)</TitleTypo>
+              <TextField fullWidth id="fullWidth" defaultValue='案件タイトル' {...register('title')} />
+            </SettingItem>
             <SettingItem>
               <TitleTypo>公開日設定</TitleTypo>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -152,26 +256,26 @@ const CreateMatter = () => {
             { defaultContentNum.map((text, index) => (
                 <SettingItem key={index}>
                   <TitleFlex>
-                    <TitleTypo>タイトル{text}</TitleTypo>
+                    <TitleTypo>サブタイトル{text}(最大100文字)</TitleTypo>
                     { index != 0 && 
                       <StyledButton variant="contained" color='warning' size="small" startIcon={<DeleteForeverIcon />} type="button" onClick={() => deleteContent(index)} loading={loading}>コンテンツ削除</StyledButton>
                     }
                   </TitleFlex>
-                  <TextField fullWidth id="fullWidth" defaultValue='タイトル' {...register(`title${index + 1}`)} />
-                  <TitleTypo>説明文{text}</TitleTypo>
+                  <TextField fullWidth id="fullWidth" defaultValue='タイトル' {...register(`sub_title_${index + 1}`)} />
+                  <TitleTypo>説明文{text}(最大3000文字)</TitleTypo>
                   <ContentArea
                     id="outlined-multiline-static"
                     label=""
                     multiline
                     rows={8}
-                    {...register(`content${index + 1}`)}
+                    {...register(`content_${index + 1}`)}
                     defaultValue='内容'
                   />
                 </SettingItem>
               ))}
           <ButtonArea>
             <StyledButton variant="contained" color='info' startIcon={<AddIcon />} type="button" onClick={addContent} loading={loading}>コンテンツ追加</StyledButton>
-            <StyledButton variant="contained" color={'primary'} startIcon={<ChangeCircleIcon />} type="submit" loading={loading}>更新</StyledButton>
+            <StyledButton variant="contained" color={'primary'} startIcon={<ChangeCircleIcon />} type="submit" loading={loading}>作成</StyledButton>
           </ButtonArea>
           </SettingArea>
         </form>
