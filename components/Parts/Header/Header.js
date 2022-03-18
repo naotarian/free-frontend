@@ -21,28 +21,37 @@ const StyledLoginButton = styled(Button)`
 `
 const Header = (props) => {
   const storeToken = useSelector((state) => state.csrf)
-  const [cookies, setCookie, removeCookie] = useCookies()
+  const [cookies, setCookie, removeCookie] = useCookies(['user_info'])
   const [authenticated, setAuthenticated] = useState(false)
   const router = useRouter()
   let url = `${process.env.NEXT_PUBLIC_API}api/me`
   let data = {}
   let token_end_point = `${process.env.NEXT_PUBLIC_API}sanctum/csrf-cookie`
-  const { token } = props;
-  //ログインチェック
-  axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  }).then((response) => {
-    if(response.data.data) {
+  const { token, userInfo } = props;
+  useEffect(() => {
+    if(cookies.user_info && cookies.user_info != 'undefined') {
+      //cookieにデータあり
       setAuthenticated(true)
+    } else {
+      //ログインチェック
+      axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }).then((response) => {
+        if (!cookies.user_info || cookies.user_info == 'undefined') {
+          setCookie("user_info", response.data)
+          setAuthenticated(true)
+        }
+      }).catch(error => {
+        const {
+          status,
+          statusText
+        } = error.response
+      })
     }
-  }).catch(error => {
-    const {
-      status,
-      statusText
-    } = error.response
-  })
+    userInfo(cookies.user_info)
+  }, [])
   const login = () => {
     router.push('/auth/login')
   }
@@ -51,7 +60,7 @@ const Header = (props) => {
   }
   return (
     <HeaderGrid>
-        {authenticated ? (
+        {!authenticated ? (
           <StyledLoginButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={login} type="submit">ログイン</StyledLoginButton>
         ) : (
           <StyledLoginButton variant="contained" color={'primary'} startIcon={<LoginIcon />} onClick={myPage} type="submit">マイページ</StyledLoginButton>

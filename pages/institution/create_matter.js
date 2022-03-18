@@ -4,6 +4,7 @@ import axios from 'axios'
 import styled from 'styled-components'
 import { SubmitHandler, useForm, Controller } from 'react-hook-form'
 import { animateScroll as scroll } from "react-scroll"
+import { useCookies } from "react-cookie"
 //mui
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -104,31 +105,17 @@ const CreateMatter = () => {
   const [titleExe, setTitleExe] = useState(false)
   const [titleLengthErr, setTitleLengthErr] = useState(false)
   const router = useRouter()
+  const [cookies, setCookie, removeCookie] = useCookies(['user_info'])
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
+    if(!backendToken) {
+      //トークンがない場合はリダイレクト
+      router.push('/auth/login')
+    }
     setToken(backendToken)
-    let data = {}
-    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
-      headers: {
-        Authorization: `Bearer ${backendToken}`,
-      }
-    }).then((response) => {
-      if(response.data) {
-        setUserData(response.data)
-      } else {
-        //未ログイン時リダイレクト
-        router.push('/auth/login')
-      }
-    }).catch(error => {
-      const {
-        status,
-        statusText
-      } = error.response
-    })
   }, [])
   const onSubmit = (datas) => {
-    console.log(datas)
     if(datas.title == '') {
       scroll.scrollToTop()
       setTitleExe(true)
@@ -167,7 +154,8 @@ const CreateMatter = () => {
         }
       }
     }
-    datas.user_id = userData.id
+    //cookieからデータ取得する
+    datas.user_id = cookies.user_info.id
     datas.yaer = value ? value.getFullYear() : null
     datas.month = value ? value.getMonth() + 1 : null
     datas.day = value ? value.getDate() : null
@@ -186,6 +174,7 @@ const CreateMatter = () => {
       console.log(`Error! HTTP Status: ${status} ${statusText}`)
     });
   }
+  
   const addContent = () => {
     let tmpContentNum = defaultContentNum.length + 1
     let tmpContentNumArray = []
@@ -201,6 +190,7 @@ const CreateMatter = () => {
       }, 5000)
     }
   }
+  
   const deleteContent = (data) => {
     let tmpContentNum = defaultContentNum.length
     let tmpContentNumArray = []
@@ -209,16 +199,21 @@ const CreateMatter = () => {
         tmpContentNumArray.push(i + 1)
       }
     }
-    console.log(tmpContentNumArray)
     setDefaultContentNum(tmpContentNumArray)
   }
+  const userInfo = (data) => {
+    setUserData(data)
+  }
+  
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
   return (
     <WrapeprGrid>
       <MoveHeader />
-      <Header token={token}/>
+      { token && 
+        <Header token={token} userInfo={userInfo} />
+      }
       <ContentWrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
           <PageTitle>案件登録</PageTitle>
