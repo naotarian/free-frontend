@@ -3,6 +3,7 @@ import axios from 'axios'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useCookies } from "react-cookie"
 //components
 import MoveHeader from '../components/Parts/Header/MoveHeader'
 import Header from '../components/Parts/Header/Header'
@@ -45,33 +46,17 @@ const MyPage = () => {
   const router = useRouter()
   const { userInformationForm, handleSubmit } = useForm()
   const [userData, setUserData] = useState(null)
+  const [cookies, setCookie, removeCookie] = useCookies(['user_info'])
   const [pageNum, setPageNum] = useState(1)
+  const [token, setToken] = useState('')
   //ページロード時発火
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
     if(!backendToken) {
       //トークンがない場合はリダイレクト
-      router.push('/')
+      router.push('/auth/login')
     }
-    //ログインチェック
-    let data = {}
-    axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
-      headers: {
-        Authorization: `Bearer ${backendToken}`,
-      }
-    }).then((response) => {
-      if(response.data) {
-        setUserData(response.data)
-      } else {
-        //未ログイン時リダイレクト
-        router.push('/auth/login')
-      }
-    }).catch(error => {
-      const {
-        status,
-        statusText
-      } = error.response
-    })
+    setToken(backendToken)
   }, [])
   const createMatter = () => {
     router.push('/institution/create_matter')
@@ -83,7 +68,7 @@ const MyPage = () => {
         return(
           <>
             {userData && (
-              <InformationTable userData={userData} userInformationForm={userInformationForm} handleSubmit={handleSubmit} />
+              <InformationTable userData={userData} userInfo={userInfo} userInformationForm={userInformationForm} handleSubmit={handleSubmit} />
             )}
           </>
         )
@@ -99,9 +84,15 @@ const MyPage = () => {
   const changeNum = (index) => {
     setPageNum(index + 1)
   }
+  const userInfo = (data) => {
+    setUserData(data)
+  }
   return (
     <WrapeprGrid>
       <MoveHeader />
+      { token && 
+        <Header token={token} userInfo={userInfo} />
+      }
       <FlexBox>
         <StyledSideBox>
           <List>
@@ -116,9 +107,11 @@ const MyPage = () => {
           </List>
           <Divider />
         </StyledSideBox>
-        <InformationField>
-          {switchPage(pageNum)}
-        </InformationField>
+        {userData && 
+          <InformationField>
+            {switchPage(pageNum)}
+          </InformationField>
+        }
       </FlexBox>
     </WrapeprGrid>
   )

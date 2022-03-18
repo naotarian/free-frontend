@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import styled from 'styled-components'
+import { useCookies } from "react-cookie"
 //mui
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -63,7 +64,7 @@ const style = {
   p: 4,
 };
 const InformationTable = (props) =>  {
-  const { userData } = props
+  const { userData, userInfo } = props
   const { register, handleSubmit } = useForm()
   const [emailErrFlag, setEmailErrFlag] = useState(false)
   const [userNameErrFlag, setUserNameErrFlag] = useState(false)
@@ -79,6 +80,8 @@ const InformationTable = (props) =>  {
   const [selectedCategory2, setSelectedCategory2] = useState('')
   const [nowCategory, setNowCategory] = useState(null)
   const [changeCategory, setChangeCategory] = useState(null)
+  const [cookies, setCookie, removeCookie] = useCookies(['user_info'])
+  // const [userData, setUserData] = useState(props)
   const category1 = ['IT・WEB', '写真・動画', '音楽']
   const category2 = [['WEBエンジニア', '組込系エンジニア','AIエンジニア'], ['イラストレーター', '動画編集', 'カメラマン'], ['ボイストレーナー']]
   const nowCategoryArray = ['WEBエンジニア', '組込系エンジニア','AIエンジニア','イラストレーター', '動画編集', 'カメラマン','ボイストレーナー']
@@ -119,9 +122,12 @@ const InformationTable = (props) =>  {
     //ユーザー情報更新post
     axios.post(url, data).then(res => {
       if(res.status == '200') {
+        //更新した時
         if(res.data.data.status) {
           setEditMessageSuccess(res.data.data.msg)
           setChangeCategory(nowCategoryArray[res.data.category_detail_id - 1])
+          setCookie("user_info", res.data.data.data)
+          userInfo(res.data.data.data)
           setTimeout(() => {
             setEditMessageSuccess(null)
           }, 3000)

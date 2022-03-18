@@ -29,6 +29,7 @@ const WrapeprGrid = styled(Grid)`
 export default function Home() {
   const [token, setToken] = useState('')
   const [categories, setCategories] = useState([])
+  const [userData, setUserData] = useState(null)
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
     let data = {}
@@ -41,7 +42,6 @@ export default function Home() {
       if(response.data.default_info.categories) {
         setCategories(response.data.default_info.categories)
       }
-      console.log(response)
     }).catch(error => {
       const {
         status,
@@ -50,10 +50,15 @@ export default function Home() {
     })
     setToken(backendToken)
   }, [])
+  const userInfo = (data) => {
+    setUserData(data)
+  }
   return (
     <WrapeprGrid>
       <MoveHeader />
-      <Header token={token} />
+      { token && 
+        <Header token={token} userInfo={userInfo} />
+      }
       {categories && 
         <SearchHeader categories={categories} token={token} />
       }

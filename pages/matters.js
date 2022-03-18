@@ -10,7 +10,6 @@ const Matters = () => {
         Authorization: `Bearer ${token}`,
       }
     }).then((response) => {
-      console.log(response)
     }).catch(error => {
       const {
         status,
