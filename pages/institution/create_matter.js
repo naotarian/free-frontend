@@ -98,6 +98,8 @@ const CreateMatter = () => {
   const [userData, setUserData] = useState(null)
   const [contents, setContents] = useState([{}])
   const [defaultContentNum, setDefaultContentNum] = useState([1])
+  // const [defaultContentNum, setDefaultContentNum] = useState([{sub_title: 'サブタイトル1', content: '内容1'}])
+  const [defaultSet, setDefaultSet] = useState([{sub_title: 'サブタイトル1', content: 'aaaaa'}])
   const [contentOver, setContentOver] = useState(false)
   const [token, setToken] = useState(null)
   const [subTitleLengthErr, setSubTitleLengthErr] = useState(false)
@@ -176,33 +178,36 @@ const CreateMatter = () => {
   }
   
   const addContent = () => {
-    let tmpContentNum = defaultContentNum.length + 1
-    let tmpContentNumArray = []
-    for(let i = 0; i < tmpContentNum; i++) {
-      tmpContentNumArray.push(i + 1)
+    if(defaultSet.length > 10) {
+      console.log('追加コンテンツは10個までです。')
+      return
     }
-    if(tmpContentNum - 1 < 10) {
-      setDefaultContentNum(tmpContentNumArray)
-    } else {
-      setContentOver(true)
-      setTimeout(() => {
-        setContentOver(false)
-      }, 5000)
-    }
+    const newSet = [...defaultSet, {sub_title: 'タイトル', content: '内容'}]
+    console.log(newSet)
+    setDefaultSet(newSet)
   }
   
+  //コンテンツ削除時
   const deleteContent = (data) => {
-    let tmpContentNum = defaultContentNum.length
-    let tmpContentNumArray = []
-    for(let i = 0; i < tmpContentNum; i++) {
-      if(i != data) {
-        tmpContentNumArray.push(i + 1)
-      }
-    }
-    setDefaultContentNum(tmpContentNumArray)
+    setDefaultSet(
+        defaultSet.filter((content, index) => (index != data))
+    )
+    console.log(data)
   }
   const userInfo = (data) => {
     setUserData(data)
+  }
+  //テキストエリアstate更新
+  const contentChange = (event, key) => {
+    setDefaultSet(
+      defaultSet.map((content, index) => (index == key ? {sub_title: content.sub_title, content: event.target.value} : content))
+    )
+  }
+  // サブタイトルstate更新
+  const subTitleChange = (event, key) => {
+    setDefaultSet(
+      defaultSet.map((content, index) => (index == key ? {sub_title: event.target.value, content: content.content} : content))
+    )
   }
   
   const Transition = React.forwardRef(function Transition(props, ref) {
@@ -248,26 +253,27 @@ const CreateMatter = () => {
                 />
               </LocalizationProvider>
             </SettingItem>
-            { defaultContentNum.map((text, index) => (
-                <SettingItem key={index}>
+            { Object.entries(defaultSet).map(([key, value]) => (
+               <SettingItem key={key}>
                   <TitleFlex>
-                    <TitleTypo>サブタイトル{text}(最大100文字)</TitleTypo>
-                    { index != 0 && 
-                      <StyledButton variant="contained" color='warning' size="small" startIcon={<DeleteForeverIcon />} type="button" onClick={() => deleteContent(index)} loading={loading}>コンテンツ削除</StyledButton>
+                    <TitleTypo>サブタイトル{Number(key) + 1}(最大100文字)</TitleTypo>
+                    { key != 0 && 
+                      <StyledButton variant="contained" color='warning' size="small" startIcon={<DeleteForeverIcon />} type="button" onClick={() => deleteContent(key)} loading={loading}>コンテンツ削除</StyledButton>
                     }
                   </TitleFlex>
-                  <TextField fullWidth id="fullWidth" defaultValue='タイトル' {...register(`sub_title_${index + 1}`)} />
-                  <TitleTypo>説明文{text}(最大3000文字)</TitleTypo>
+                  <TextField fullWidth id="fullWidth" onBlur={() => subTitleChange(event, key)} defaultValue={value.sub_title} />
+                  <TitleTypo>説明文{Number(key) + 1}(最大3000文字)</TitleTypo>
                   <ContentArea
                     id="outlined-multiline-static"
                     label=""
                     multiline
                     rows={8}
-                    {...register(`content_${index + 1}`)}
-                    defaultValue='内容'
+                    defaultValue={value.content}
+                    onBlur={() => contentChange(event, key)}
                   />
                 </SettingItem>
-              ))}
+              )) 
+            }
           <ButtonArea>
             <StyledButton variant="contained" color='info' startIcon={<AddIcon />} type="button" onClick={addContent} loading={loading}>コンテンツ追加</StyledButton>
             <StyledButton variant="contained" color={'primary'} startIcon={<ChangeCircleIcon />} type="submit" loading={loading}>作成</StyledButton>
