@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'
 const HeaderGrid = styled(Grid)`
   width: 100%;
   height: 60px;
-  background: #fff;
+  background: darkgreen;
 `
 const StyledLoginButton = styled(Button)`
   height: 100%;

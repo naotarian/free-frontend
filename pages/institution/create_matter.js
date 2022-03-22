@@ -134,33 +134,15 @@ const CreateMatter = () => {
       }, 3000)
       return
     }
-    for(let i = 0; i < 10; i++) {
-      if ('sub_title_' + i in datas) {
-        if(datas['sub_title_' + i].length > 100) {
-          scroll.scrollToTop()
-          setSubTitleLengthErr(true)
-          setTimeout(() => {
-            setSubTitleLengthErr(false)
-          }, 3000)
-          return
-        }
-      }
-      if ('content_' + i in datas) {
-        if(datas['content_' + i].length > 3000) {
-          scroll.scrollToTop()
-          setContentsLengthErr(true)
-          setTimeout(() => {
-            setContentsLengthErr(false)
-          }, 3000)
-          return
-        }
-      }
-    }
     //cookieからデータ取得する
     datas.user_id = cookies.user_info.id
+    datas.occupation_id = cookies.user_info.occupation_id
+    datas.occupation_detail_id = cookies.user_info.occupation_detail_id
     datas.yaer = value ? value.getFullYear() : null
     datas.month = value ? value.getMonth() + 1 : null
     datas.day = value ? value.getDate() : null
+    datas.data = defaultSet
+    console.log(datas)
     let url = `${process.env.NEXT_PUBLIC_API}api/create_matters`
     axios.post(url, datas, {
       headers: {
@@ -178,6 +160,7 @@ const CreateMatter = () => {
   }
   
   const addContent = () => {
+    console.log(defaultSet)
     if(defaultSet.length > 10) {
       console.log('追加コンテンツは10個までです。')
       return
@@ -253,7 +236,7 @@ const CreateMatter = () => {
                 />
               </LocalizationProvider>
             </SettingItem>
-            { Object.entries(defaultSet).map(([key, value]) => (
+            { defaultSet && Object.entries(defaultSet).map(([key, value]) => (
                <SettingItem key={key}>
                   <TitleFlex>
                     <TitleTypo>サブタイトル{Number(key) + 1}(最大100文字)</TitleTypo>
@@ -274,6 +257,9 @@ const CreateMatter = () => {
                 </SettingItem>
               )) 
             }
+            { defaultSet && Object.entries(defaultSet).map(([key, value]) => {
+              console.log(value.content)
+            })}
           <ButtonArea>
             <StyledButton variant="contained" color='info' startIcon={<AddIcon />} type="button" onClick={addContent} loading={loading}>コンテンツ追加</StyledButton>
             <StyledButton variant="contained" color={'primary'} startIcon={<ChangeCircleIcon />} type="submit" loading={loading}>作成</StyledButton>
