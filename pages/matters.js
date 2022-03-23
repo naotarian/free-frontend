@@ -33,6 +33,7 @@ const Matters = () => {
   const router = useRouter()
   const [token, setToken] = useState(null)
   const [userData, setUserData] = useState(null)
+  const [categories, setCategories] = useState(null)
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
     setToken(backendToken)
@@ -41,6 +42,8 @@ const Matters = () => {
         Authorization: `Bearer ${backendToken}`,
       }
     }).then((response) => {
+      console.log(response)
+      setCategories(response.data.matters.categories)
     }).catch(error => {
       const {
         status,
@@ -58,7 +61,9 @@ const Matters = () => {
         <Header token={token} userInfo={userInfo} />
       }
       <ContentsGrid>
-        <SearchBar />
+      {categories && 
+        <SearchBar categories={categories} />
+      }
         <ResultArea>
           test
         </ResultArea>
