@@ -34,6 +34,7 @@ const Header = (props) => {
       setAuthenticated(true)
     } else {
       //ログインチェック
+      console.log(token)
       axios.post(`${process.env.NEXT_PUBLIC_API}api/me`,data, {
         headers: {
           Authorization: `Bearer ${token}`,

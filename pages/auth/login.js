@@ -5,6 +5,8 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
+import { useCookies } from "react-cookie"
+
 //mui
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
@@ -15,7 +17,6 @@ import { ThemeProvider } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import LoginIcon from '@mui/icons-material/Login'
 import Alert from '@mui/material/Alert'
-import { useCookies } from "react-cookie"
 const LoginGrid = styled(Grid)`
   background: #CCECCC;
   height: 100vh;
@@ -63,10 +64,11 @@ const StyledAlert = styled(Alert)`
 
 const Login = () => {
   useEffect(() => {
-    let token = window.localStorage.getItem('token')
-    if(token) {
+    if(cookies.user_info && cookies.user_info != 'undefined') {
+      //cookieにデータあり
       router.push('/')
-    }
+    } 
+    let token = window.localStorage.getItem('token')
   }) 
   const router = useRouter()
   const { register, handleSubmit } = useForm()
@@ -74,6 +76,7 @@ const Login = () => {
   const [unauthorized, setUnauthorized] = useState(false)
   const [mistaken, setMistaken] = useState(false)
   const [successLogin, setSuccessLogin] = useState(false)
+  const [cookies, setCookie, removeCookie] = useCookies(['user_info'])
   const [token, setToken] = useState('')
   const dispatch = useDispatch()
   // フォーム送信時の処理
@@ -89,7 +92,8 @@ const Login = () => {
     let login = `${process.env.NEXT_PUBLIC_API}api/login`
     let email = data.email
     let password = data.password
-    const loginParams = { email,password}
+    const loginParams = { email, password }
+    console.log(loginParams)
     axios.get(url, { withCredentials: true }).then(response => {
       // ログイン処理を実装する
       axios.post(login,loginParams,{ withCredentials: true }).then(response => {
