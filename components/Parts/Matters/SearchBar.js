@@ -15,16 +15,31 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 const SearchBarGrid = styled(Grid)`
   width: 300px;
 `
 
 const SearchBar = (props) => {
-  const { categories } = props
-  const [age, setAge] = React.useState('')
+  const router = useRouter()
+  const { categories, categoryDetail } = props
+  const [age, setAge] = useState(router.query.source)
+  const [menuCategoryDetail, setMenuCategoryDetail] = useState(null)
+  const [load, setLoad] = useState(true)
+  useEffect(() => {
+    let tmpCategoryDetail = []
+    categoryDetail.map((data, index) => {
+      if(data.category_id == age) {
+        tmpCategoryDetail.push(data)
+      }
+    })
+    setMenuCategoryDetail(tmpCategoryDetail)
+  }, [age])
   const handleChange = (event) => {
-    console.log(event.target.value)
     setAge(event.target.value)
+    setLoad(false)
   }
   return (
     <SearchBarGrid>
@@ -39,23 +54,34 @@ const SearchBar = (props) => {
             size="small"
           />
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            カテゴリ
+            カテゴリー
           </Typography>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={age}
-              label="Age"
               onChange={handleChange}
               size="small"
             >
               { categories.map((text, index) => (
-                <MenuItem value={text.id}>{text.name}</MenuItem>
+                <MenuItem value={text.id} key={index}>{text.name}</MenuItem>
               )) }
             </Select>
           </FormControl>
+          <FormGroup>
+            { menuCategoryDetail && menuCategoryDetail.map((text, index) => (
+               load == true ? (
+                text.id == router.query.source ? (
+                  <FormControlLabel control={<Checkbox defaultChecked />} label={text.name} key={index} />
+                ) : (
+                  <FormControlLabel control={<Checkbox />} label={text.name} key={index} />
+                )
+              ) : (
+                <FormControlLabel control={<Checkbox defaultChecked />} label={text.name} key={index} />
+              )
+            )) }
+          </FormGroup>
         </CardContent>
         <CardActions>
           <Button size="small">Learn More</Button>

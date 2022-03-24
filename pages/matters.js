@@ -34,7 +34,9 @@ const Matters = () => {
   const [token, setToken] = useState(null)
   const [userData, setUserData] = useState(null)
   const [categories, setCategories] = useState(null)
+  const [categoryDetail, setCategoryDetail] = useState(null)
   useEffect(() => {
+    console.log(router)
     let backendToken = window.localStorage.getItem('token')
     setToken(backendToken)
     axios.post(`${process.env.NEXT_PUBLIC_API}api/get_matters`,router.category, {
@@ -42,8 +44,8 @@ const Matters = () => {
         Authorization: `Bearer ${backendToken}`,
       }
     }).then((response) => {
-      console.log(response)
       setCategories(response.data.matters.categories)
+      setCategoryDetail(response.data.matters.category_detail)
     }).catch(error => {
       const {
         status,
@@ -61,8 +63,8 @@ const Matters = () => {
         <Header token={token} userInfo={userInfo} />
       }
       <ContentsGrid>
-      {categories && 
-        <SearchBar categories={categories} />
+      {categories && categoryDetail &&
+        <SearchBar categories={categories} categoryDetail={categoryDetail} />
       }
         <ResultArea>
           test
