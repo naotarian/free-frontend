@@ -24,8 +24,9 @@ const SearchBarGrid = styled(Grid)`
 
 const SearchBar = (props) => {
   const router = useRouter()
-  const { categories, categoryDetail } = props
+  const { categories, categoryDetail, loadMatters } = props
   const [age, setAge] = useState(router.query.source)
+  const [defaultCategory, setDefaultCategory] = useState(router.query.category)
   const [menuCategoryDetail, setMenuCategoryDetail] = useState(null)
   const [load, setLoad] = useState(true)
   useEffect(() => {
@@ -37,6 +38,24 @@ const SearchBar = (props) => {
     })
     setMenuCategoryDetail(tmpCategoryDetail)
   }, [age])
+  useEffect(() => {
+    let backendToken = window.localStorage.getItem('token')
+    if(defaultCategory != null) {
+      let default_param = {'category':defaultCategory}
+      axios.post(`${process.env.NEXT_PUBLIC_API}api/default_matters`,default_param, {
+        headers: {
+          Authorization: `Bearer ${backendToken}`,
+        }
+      }).then((response) => {
+        loadMatters(response.data)
+      }).catch(error => {
+        const {
+          status,
+          statusText
+        } = error.response
+      })
+    }
+  }, [defaultCategory])
   const handleChange = (event) => {
     setAge(event.target.value)
     setLoad(false)

@@ -34,6 +34,7 @@ const Matters = () => {
   const [userData, setUserData] = useState(null)
   const [categories, setCategories] = useState(null)
   const [categoryDetail, setCategoryDetail] = useState(null)
+  const [matters, setMatters] = useState(null)
   useEffect(() => {
     console.log(router)
     let backendToken = window.localStorage.getItem('token')
@@ -55,6 +56,9 @@ const Matters = () => {
   const userInfo = (data) => {
     setUserData(data)
   }
+  const loadMatters = (data) => {
+    setMatters(data)
+  }
   return(
     <WrapeprGrid>
       <MoveHeader />
@@ -63,9 +67,11 @@ const Matters = () => {
       }
       <ContentsGrid>
         {categories && categoryDetail &&
-          <SearchBar categories={categories} categoryDetail={categoryDetail} />
+          <SearchBar categories={categories} categoryDetail={categoryDetail} loadMatters={loadMatters} />
         }
-        <ResultArea />
+        {matters && 
+          <ResultArea matters={matters} />
+        }
       </ContentsGrid>
     </WrapeprGrid>
   )

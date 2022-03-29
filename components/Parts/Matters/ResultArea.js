@@ -17,37 +17,59 @@ const ResultCard = styled(Card)`
   width: 100%;
   padding: 2rem;
   margin-bottom: 2rem;
+  cursor: pointer;
   box-shadow: 7px 2px 27px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
 `
-const ResultArea = () => {
+const SubTitleGrid = styled(Typography)`
+  color: #6c757d;
+`
+const TitleGrid = styled(Typography)`
+  font-size: 1.3rem;
+  color: #333;
+  font-family: MS ゴシック;
+  font-weight: bold;
+`
+const ResultArea = (props) => {
   const [token, setToken] = useState(null)
-  let backendToken = window.localStorage.getItem('token')
-  const router = useRouter()
-  if(!backendToken) {
-    //トークンがない場合はリダイレクト
-    router.push('/auth/login')
-  }
-  let url = `${process.env.NEXT_PUBLIC_API}api/get_matters`
-  const datas = []
-  axios.post(url, datas, {
-    headers: {
-      Authorization: `Bearer ${backendToken}`,
-    }
-  }).then(res => {
-    console.log(res)
-  }).catch(error => {
-    const {
-      status,
-      statusText
-    } = error.response
-    console.log(`Error! HTTP Status: ${status} ${statusText}`)
-  });
+  const {matters} = props
+  console.log(matters)
+  // let backendToken = window.localStorage.getItem('token')
+  // const router = useRouter()
+  // if(!backendToken) {
+  //   //トークンがない場合はリダイレクト
+  //   router.push('/auth/login')
+  // }
+  // let url = `${process.env.NEXT_PUBLIC_API}api/get_matters`
+  // const datas = []
+  // axios.post(url, datas, {
+  //   headers: {
+  //     Authorization: `Bearer ${backendToken}`,
+  //   }
+  // }).then(res => {
+  //   console.log(res)
+  // }).catch(error => {
+  //   const {
+  //     status,
+  //     statusText
+  //   } = error.response
+  //   console.log(`Error! HTTP Status: ${status} ${statusText}`)
+  // });
   return (
     <ResultAreaWrapper>
-      <ResultCard>test</ResultCard>
-      <ResultCard>test</ResultCard>
-      <ResultCard>test</ResultCard>
-      <ResultCard>test</ResultCard>
+    {matters && (
+      matters.map((text, index) => (
+        <ResultCard key={index}>
+          <TitleGrid>
+            {text.title}
+          </TitleGrid>
+          {text.sub_title_1 && (
+            <SubTitleGrid>
+              {text.sub_title_1}
+            </SubTitleGrid>
+          )}
+        </ResultCard>
+      ))
+    )}
     </ResultAreaWrapper>
   )
 }
