@@ -14,6 +14,7 @@ import Button from '@mui/material/Button'
 import MoveHeader from '../components/Parts/Header/MoveHeader'
 import Header from '../components/Parts/Header/Header'
 import SearchBar from '../components/Parts/Matters/SearchBar'
+import ResultArea from '../components/Parts/Matters/ResultArea'
 const WrapeprGrid = styled(Grid)`
   margin: 0 auto;
   padding: 0;
@@ -26,15 +27,16 @@ const ContentsGrid = styled(Grid)`
   display: flex;
   justify-content: space-between;
 `
-const ResultArea = styled(Grid)`
-  width: 600px;
-`
+
 const Matters = () => {
   const router = useRouter()
   const [token, setToken] = useState(null)
   const [userData, setUserData] = useState(null)
   const [categories, setCategories] = useState(null)
+  const [categoryDetail, setCategoryDetail] = useState(null)
+  const [matters, setMatters] = useState(null)
   useEffect(() => {
+    console.log(router)
     let backendToken = window.localStorage.getItem('token')
     setToken(backendToken)
     axios.post(`${process.env.NEXT_PUBLIC_API}api/get_matters`,router.category, {
@@ -42,8 +44,8 @@ const Matters = () => {
         Authorization: `Bearer ${backendToken}`,
       }
     }).then((response) => {
-      console.log(response)
       setCategories(response.data.matters.categories)
+      setCategoryDetail(response.data.matters.category_detail)
     }).catch(error => {
       const {
         status,
@@ -54,6 +56,9 @@ const Matters = () => {
   const userInfo = (data) => {
     setUserData(data)
   }
+  const loadMatters = (data) => {
+    setMatters(data)
+  }
   return(
     <WrapeprGrid>
       <MoveHeader />
@@ -61,12 +66,12 @@ const Matters = () => {
         <Header token={token} userInfo={userInfo} />
       }
       <ContentsGrid>
-      {categories && 
-        <SearchBar categories={categories} />
-      }
-        <ResultArea>
-          test
-        </ResultArea>
+        {categories && categoryDetail &&
+          <SearchBar categories={categories} categoryDetail={categoryDetail} loadMatters={loadMatters} />
+        }
+        {matters && 
+          <ResultArea matters={matters} />
+        }
       </ContentsGrid>
     </WrapeprGrid>
   )

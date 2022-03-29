@@ -18,7 +18,7 @@ const SearchHeader = (props) => {
   const selectCategory = (text) => {
     router.push({
       pathname: `/matters`, // 遷移先のページ
-      query: { category:text['id'], name:text['name'] },
+      query: { source:text['category_id'], category:text['id'], name:text['name'] },
       as: '/matter'
     });
   }
