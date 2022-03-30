@@ -36,10 +36,9 @@ const Matters = () => {
   const [categoryDetail, setCategoryDetail] = useState(null)
   const [matters, setMatters] = useState(null)
   useEffect(() => {
-    console.log(router)
     let backendToken = window.localStorage.getItem('token')
     setToken(backendToken)
-    axios.post(`${process.env.NEXT_PUBLIC_API}api/get_matters`,router.category, {
+    axios.post(`${process.env.NEXT_PUBLIC_API}api/get_category`,router.category, {
       headers: {
         Authorization: `Bearer ${backendToken}`,
       }

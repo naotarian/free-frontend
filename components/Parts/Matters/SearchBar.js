@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from 'react'
+import React,{ useState, useEffect, useRef } from 'react'
 import { useRouter } from "next/router"
 import axios from 'axios'
 import styled from 'styled-components'
@@ -28,7 +28,13 @@ const SearchBar = (props) => {
   const [age, setAge] = useState(router.query.source)
   const [defaultCategory, setDefaultCategory] = useState(router.query.category)
   const [menuCategoryDetail, setMenuCategoryDetail] = useState(null)
+  const [categoryIdList, setCategoryIdList] = useState([router.query.category])
   const [load, setLoad] = useState(true)
+  const isFirstRender = useRef(false)
+  const [token, setToken] = useState(null)
+  useEffect(() => {
+    isFirstRender.current = true
+  }, [])
   useEffect(() => {
     let tmpCategoryDetail = []
     categoryDetail.map((data, index) => {
@@ -40,6 +46,7 @@ const SearchBar = (props) => {
   }, [age])
   useEffect(() => {
     let backendToken = window.localStorage.getItem('token')
+    setToken(backendToken)
     if(defaultCategory != null) {
       let default_param = {'category':defaultCategory}
       axios.post(`${process.env.NEXT_PUBLIC_API}api/default_matters`,default_param, {
@@ -60,6 +67,34 @@ const SearchBar = (props) => {
     setAge(event.target.value)
     setLoad(false)
   }
+  const checkChange = (event) => {
+    if(event.target.checked) {
+      const newList = [...categoryIdList, event.target.value];
+      setCategoryIdList(newList);
+    } else {
+      setCategoryIdList(
+        categoryIdList.filter((cat, index) => (cat !== event.target.value))
+      )
+    }
+  }
+  useEffect(() => {
+    if(isFirstRender.current) { // 初回レンダー判定
+      isFirstRender.current = false // もう初回レンダーじゃないよ代入
+    } else {
+      axios.post(`${process.env.NEXT_PUBLIC_API}api/get_matters`,categoryIdList, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }).then((response) => {
+        loadMatters(response.data)
+      }).catch(error => {
+        const {
+          status,
+          statusText
+        } = error.response
+      })
+    }
+  }, [categoryIdList])
   return (
     <SearchBarGrid>
       <Card sx={{ minWidth: 275 }}>
@@ -91,13 +126,13 @@ const SearchBar = (props) => {
           <FormGroup>
             { menuCategoryDetail && menuCategoryDetail.map((text, index) => (
                load == true ? (
-                text.id == router.query.source ? (
-                  <FormControlLabel control={<Checkbox defaultChecked />} label={text.name} key={index} />
+                text.id == router.query.category ? (
+                  <FormControlLabel control={<Checkbox defaultChecked onChange={checkChange} value={text.id} />} label={text.name} key={index} />
                 ) : (
-                  <FormControlLabel control={<Checkbox />} label={text.name} key={index} />
+                  <FormControlLabel control={<Checkbox  onChange={checkChange} value={text.id} />} label={text.name} key={index} />
                 )
               ) : (
-                <FormControlLabel control={<Checkbox defaultChecked />} label={text.name} key={index} />
+                <FormControlLabel control={<Checkbox defaultChecked  onChange={checkChange} value={text.id} />} label={text.name} key={index} />
               )
             )) }
           </FormGroup>
